@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Interaktif: Operasi Bilangan Rasional SMP</title>
+  <style>
+    /* CSS RESET & VARIABLES */
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #06b6d4;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* HEADER & NAVIGATION */
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-title h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .logo-title p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: white;
+      color: var(--primary);
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    /* PAGE SECTIONS */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CARDS & CONTAINERS */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .card h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card h3 {
+      color: var(--secondary);
+      margin: 1rem 0 0.5rem 0;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+    }
+
+    .btn-accent {
+      background-color: var(--accent);
+    }
+
+    /* FORM INPUTS */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--primary);
+    }
+
+    /* INTERACTIVE NUMBER LINE */
+    .number-line-container {
+      width: 100%;
+      overflow-x: auto;
+      padding: 2rem 0;
+      text-align: center;
+    }
+
+    .number-line {
+      position: relative;
+      height: 4px;
+      background-color: #333;
+      margin: 40px 20px;
+      min-width: 500px;
+    }
+
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 15px;
+      background-color: #333;
+      top: -5px;
+    }
+
+    .tick-label {
+      position: absolute;
+      top: 15px;
+      transform: translateX(-50%);
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .pointer {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      top: -7px;
+      transform: translateX(-50%);
+      transition: left 0.3s;
+      cursor: pointer;
+    }
+
+    /* INTERACTIVE QUIZ & EXERCISES */
+    .quiz-option {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      background-color: #f1f5f9;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      background-color: #e2e8f0;
+    }
+
+    .quiz-option.selected {
+      border-color: var(--primary);
+      background-color: #e0e7ff;
+    }
+
+    .feedback-box {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background-color: #d1fae5;
+      color: #065f46;
+      border: 1px solid #10b981;
+    }
+
+    .feedback-box.incorrect {
+      display: block;
+      background-color: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
+    }
+
+    /* PROGRESS BAR & BADGES */
+    .progress-container {
+      width: 100%;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--success);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .badge-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .badge-item {
+      background: #f1f5f9;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: bold;
+      opacity: 0.4;
+      border: 2px dashed #cbd5e1;
+    }
+
+    .badge-item.unlocked {
+      opacity: 1;
+      background: #fef3c7;
+      border: 2px solid var(--accent);
+      color: #92400e;
+    }
+
+    /* EMOJI REFLECTION */
+    .emoji-group {
+      display: flex;
+      justify-content: space-around;
+      margin: 1.5rem 0;
+    }
+
+    .emoji-btn {
+      font-size: 2.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .emoji-btn:hover, .emoji-btn.active {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: auto;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 600px) {
+      .header-container {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+      nav {
+        width: 100%;
+      }
+      .card {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER & NAVIGASI -->
+  <header>
+    <div class="header-container">
+      <div class="logo-title">
+        <h1>Matematika Interaktif Kelas 7</h1>
+        <p>Operasi Bilangan Rasional</p>
+      </div>
+      <nav>
+        <button class="nav-btn active" onclick="switchPage('beranda')">Beranda</button>
+        <button class="nav-btn" onclick="switchPage('tujuan')">Tujuan</button>
+        <button class="nav-btn" onclick="switchPage('materi')">Materi</button>
+        <button class="nav-btn" onclick="switchPage('eksplorasi')">Eksplorasi</button>
+        <button class="nav-btn" onclick="switchPage('latihan')">Latihan</button>
+        <button class="nav-btn" onclick="switchPage('tantangan')">Misi Games</button>
+        <button class="nav-btn" onclick="switchPage('refleksi')">Refleksi</button>
+        <button class="nav-btn" onclick="switchPage('hasil')">Hasil</button>
+        <button class="nav-btn" onclick="switchPage('guru')">Guru</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 1. BERANDA -->
+    <section id="beranda" class="page-section active">
+      <div class="card" style="text-align: center; padding: 2.5rem 1rem;">
+        <h1 style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;">Aplikasi Bilangan Rasional</h1>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Media Pembelajaran Berdiferensiasi & Interaktif Matematika SMP Kelas 7</p>
+        
+        <div style="background: #e0e7ff; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: left;">
+          <strong>Capaian Pembelajaran (CP):</strong>
+          <p>Peserta didik dapat memahami, membandingkan, dan melakukan operasi hitung (penjumlahan, pengurangan, perkalian, pembagian) pada bilangan rasional serta menerapkannya dalam pemecahan masalah kehidupan sehari-hari.</p>
+        </div>
+
+        <div style="max-width: 400px; margin: 0 auto; text-align: left;" class="card">
+          <h3 style="margin-top: 0;">Identitas Peserta Didik</h3>
+          <div class="form-group">
+            <label for="namaSiswa">Nama Lengkap:</label>
+            <input type="text" id="namaSiswa" placeholder="Masukkan nama kamu...">
+          </div>
+          <div class="form-group">
+            <label for="kelasSiswa">Kelas:</label>
+            <select id="kelasSiswa">
+              <option value="">-- Pilih Kelas --</option>
+              <option value="7-A">7-A</option>
+              <option value="7-B">7-B</option>
+              <option value="7-C">7-C</option>
+              <option value="7-D">7-D</option>
+            </select>
+          </div>
+          <button class="btn btn-success" style="width: 100%;" onclick="startLearning()">Mulai Belajar 🚀</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TUJUAN PEMBELAJARAN -->
+    <section id="tujuan" class="page-section">
+      <div class="card">
+        <h2>🎯 Tujuan Pembelajaran</h2>
+        <p>Setelah menggunakan media interaktif ini, kamu diharapkan mampu:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+          <li>Menjelaskan pengertian dan bentuk-bentuk bilangan rasional (pecahan dan desimal).</li>
+          <li>Membandingkan dan mengurutkan beberapa bilangan rasional dengan benar.</li>
+          <li>Menentukan hasil penjumlahan, pengurangan, perkalian, dan pembagian bilangan rasional.</li>
+          <li>Selesaikan operasi campuran bilangan rasional secara akurat.</li>
+          <li>Memecahkan masalah sehari-hari yang berkaitan dengan suhu, uang, ketinggian, dan resep makanan.</li>
+        </ul>
+        <br>
+        <button class="btn btn-secondary" onclick="openGoogleDocs()">📄 Buka Panduan Belajar (Google Docs)</button>
+      </div>
+    </section>
+
+    <!-- 3. MATERI -->
+    <section id="materi" class="page-section">
+      <div class="card">
+        <h2>📚 Modul Materi Interaktif</h2>
+        <div class="form-group">
+          <label>Pilih Sub-Materi:</label>
+          <select id="selectMateri" onchange="renderMateriContent()">
+            <option value="1">1. Pengertian & Bentuk Bilangan Rasional</option>
+            <option value="2">2. Membandingkan Bilangan Rasional</option>
+            <option value="3">3. Penjumlahan & Pengurangan Bilangan Rasional</option>
+            <option value="4">4. Perkalian & Pembagian Bilangan Rasional</option>
+            <option value="5">5. Operasi Campuran & Penerapan Kontekstual</option>
+          </select>
+        </div>
+        <div id="materiDisplay" style="margin-top: 1rem; line-height: 1.6;"></div>
+      </div>
+    </section>
+
+    <!-- 4. EKSPLORASI INTERAKTIF -->
+    <section id="eksplorasi" class="page-section">
+      <div class="card">
+        <h2>🔬 Eksplorasi Garis Bilangan Interaktif</h2>
+        <p>Geser nilai pecahan/desimal untuk melihat posisinya pada garis bilangan!</p>
+        
+        <div style="margin: 1.5rem 0; text-align: center;">
+          <label for="sliderValue"><strong>Nilai Bilangan Rasional: </strong></label>
+          <input type="range" id="sliderValue" min="-5" max="5" step="0.5" value="0" oninput="updateNumberLine(this.value)" style="width: 80%;">
+          <h3 id="sliderText" style="color: var(--primary); margin-top: 0.5rem;">0</h3>
+        </div>
+
+        <div class="number-line-container">
+          <div class="number-line" id="interactiveLine">
+            <div class="pointer" id="linePointer" style="left: 50%;"></div>
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+          💡 <strong>Pertanyaan Pemantik:</strong>
+          <p>Apakah bilangan $-2.5$ terletak di sebelah kiri atau kanan $-1$? Mengapa demikian?</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. LATIHAN SOAL -->
+    <section id="latihan" class="page-section">
+      <div class="card">
+        <h2>📝 Latihan Soal Interaktif</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span id="quizProgressText">Soal 1 dari 15</span>
+          <span id="quizDifficulty" style="background: var(--accent); color: white; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem;">Mudah</span>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar" id="quizProgressBar"></div>
+        </div>
+
+        <div id="quizQuestionBox">
+          <h3 id="quizQuestionText" style="color: var(--text-main); margin-bottom: 1rem;">Pertanyaan...</h3>
+          <div id="quizOptionsContainer"></div>
+          <div class="form-group" id="quizInputContainer" style="display: none;">
+            <input type="text" id="quizTextInput" placeholder="Ketik jawaban singkat kamu...">
+            <button class="btn btn-primary" style="margin-top: 0.5rem;" onclick="submitTextAnswer()">Kirim Jawaban</button>
+          </div>
+        </div>
+
+        <div class="feedback-box" id="quizFeedback"></div>
+
+        <div style="margin-top: 1.5rem; display: flex; justify-content: space-between;">
+          <button class="btn btn-secondary" id="btnHint" onclick="showHint()">💡 Petunjuk</button>
+          <button class="btn btn-primary" id="btnNextQuiz" style="display: none;" onclick="nextQuestion()">Soal Berikutnya ➔</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TANTANGAN / MISI -->
+    <section id="tantangan" class="page-section">
+      <div class="card">
+        <h2>🎮 Misi Bilangan Rasional</h2>
+        <p>Selesaikan misi untuk mengumpulkan Poin XP dan membuka Badge Penghargaan!</p>
+        
+        <div style="display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap;">
+          <div style="background: #e0e7ff; padding: 1rem; border-radius: 12px; flex: 1; min-width: 150px;">
+            <small>Total Skor XP</small>
+            <h2 id="gameScoreDisplay" style="color: var(--primary);">0 XP</h2>
+          </div>
+          <div style="background: #fef3c7; padding: 1rem; border-radius: 12px; flex: 1; min-width: 150px;">
+            <small>Level Penguasaan</small>
+            <h2 id="gameLevelDisplay" style="color: var(--accent);">Pemula</h2>
+          </div>
+        </div>
+
+        <h3>🏆 Pencapaian / Badge</h3>
+        <div class="badge-grid">
+          <div class="badge-item" id="badge1"><span>🥉</span> Penjelajah Rasional</div>
+          <div class="badge-item" id="badge2"><span>🥈</span> Pakar Pecahan</div>
+          <div class="badge-item" id="badge3"><span>🥇</span> Master Matematika</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. REFLEKSI -->
+    <section id="refleksi" class="page-section">
+      <div class="card">
+        <h2>🪞 Refleksi Diri</h2>
+        <p>Bagaimana perasaan dan pemahamanmu setelah mempelajari materi ini?</p>
+
+        <div class="emoji-group">
+          <button class="emoji-btn" onclick="selectEmoji(this, 'Sangat Bingung')">😟</button>
+          <button class="emoji-btn" onclick="selectEmoji(this, 'Cukup Paham')">😐</button>
+          <button class="emoji-btn" onclick="selectEmoji(this, 'Paham Baik')">🙂</button>
+          <button class="emoji-btn" onclick="selectEmoji(this, 'Sangat Paham')">🤩</button>
+        </div>
+
+        <div class="form-group">
+          <label for="refleksiSubstansi">Bagian mana yang paling kamu kuasai atau paling membingungkan?</label>
+          <textarea id="refleksiSubstansi" rows="3" placeholder="Tuliskan refleksi singkatmu di sini..."></textarea>
+        </div>
+
+        <button class="btn btn-success" style="width: 100%;" onclick="submitRefleksi()">Simpan & Kirim Hasil Belajar 📩</button>
+      </div>
+    </section>
+
+    <!-- 8. HASIL BELAJAR -->
+    <section id="hasil" class="page-section">
+      <div class="card" style="text-align: center;">
+        <h2>📊 Laporan Hasil Belajar</h2>
+        <p id="hasilSiswaInfo">Nama: - | Kelas: -</p>
+
+        <div style="display: flex; justify-content: space-around; margin: 1.5rem 0; flex-wrap: wrap; gap: 1rem;">
+          <div style="background: #d1fae5; padding: 1rem; border-radius: 12px; width: 120px;">
+            <small>Jawaban Benar</small>
+            <h2 id="scoreBenar" style="color: var(--success);">0</h2>
+          </div>
+          <div style="background: #fee2e2; padding: 1rem; border-radius: 12px; width: 120px;">
+            <small>Jawaban Salah</small>
+            <h2 id="scoreSalah" style="color: var(--danger);">0</h2>
+          </div>
+          <div style="background: #e0e7ff; padding: 1rem; border-radius: 12px; width: 120px;">
+            <small>Persentase</small>
+            <h2 id="scorePersen" style="color: var(--primary);">0%</h2>
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 1rem; border-radius: 12px; text-align: left; margin-bottom: 1.5rem;">
+          <strong>Rekomendasi / Tindak Lanjut:</strong>
+          <p id="rekomendasiText">Selesaikan seluruh latihan soal untuk melihat saran pembelajaran.</p>
+        </div>
+
+        <div id="statusPengiriman" style="margin-bottom: 1rem; font-weight: bold;"></div>
+      </div>
+    </section>
+
+    <!-- 9. DATA GURU (DASHBOARD REKAP) -->
+    <section id="guru" class="page-section">
+      <div class="card">
+        <h2>👩‍🏫 Dashboard Rekapitulasi Guru</h2>
+        <p>Gunakan halaman ini untuk memantau aktivitas belajar siswa secara lokal atau membuka spreadsheet utama.</p>
+        <br>
+        <button class="btn btn-primary" onclick="openGoogleSheets()">📊 Buka Google Sheets Utama</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Media Pembelajaran Matematika SMP - Operasi Bilangan Rasional</p>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       KONFIGURASI INTEGRASI GOOGLE (DIISI OLEH GURU)
+       ========================================================================== */
+    const GOOGLE_DOCS_URL = "MASUKKAN_URL_GOOGLE_DOCS_DI_SINI";
+    const GOOGLE_SCRIPT_URL = "MASUKKAN_URL_GOOGLE_APPS_SCRIPT_DI_SINI";
+
+    /* ==========================================================================
+       STATE SISTEM & DATA SISWA
+       ========================================================================== */
+    let studentData = {
+      nama: "",
+      kelas: "",
+      skor: 0,
+      benar: 0,
+      salah: 0,
+      persentase: 0,
+      level: "Pemula",
+      rekomendasi: "",
+      refleksiEmoji: "",
+      refleksiTeks: ""
+    };
+
+    let currentQuestionIndex = 0;
+    let selectedOption = null;
+
+    /* ==========================================================================
+       DATABASE SOAL LATIHAN (15 SOAL INTERAKTIF)
+       ========================================================================== */
+    const questionsDatabase = [
+      {
+        id: 1,
+        materi: "Pengertian Bilangan Rasional",
+        tingkat: "Mudah",
+        tipe: "mcq",
+        soal: "Manakah di antara bilangan berikut yang MERUPAKAN bilangan rasional?",
+        pilihan: ["A. √2", "B. 3/4", "C. π (phi)", "D. 0.123456... (tak berulang)"],
+        jawaban: 1,
+        hint: "Bilangan rasional dapat dinyatakan dalam bentuk pecahan a/b dengan b ≠ 0.",
+        pembahasan: "3/4 adalah bentuk pecahan biasa a/b di mana a dan b bilangan bulat serta b ≠ 0."
+      },
+      {
+        id: 2,
+        materi: "Bentuk Bilangan Rasional",
+        tingkat: "Mudah",
+        tipe: "mcq",
+        soal: "Bentuk desimal dari pecahan 4/5 adalah...",
+        pilihan: ["A. 0.4", "B. 0.75", "C. 0.8", "D. 0.85"],
+        jawaban: 2,
+        hint: "Bagi pembilang (4) dengan penyebut (5).",
+        pembahasan: "4 ÷ 5 = 0.8."
+      },
+      {
+        id: 3,
+        materi: "Membandingkan Bilangan Rasional",
+        tingkat: "Mudah",
+        tipe: "mcq",
+        soal: "Pernyataan perbandingan berikut yang BENAR adalah...",
+        pilihan: ["A. -1/2 > 1/4", "B. -0.75 < -0.25", "C. 3/5 < 2/5", "D. -3 > -1"],
+        jawaban: 1,
+        hint: "Pada garis bilangan negatif, semakin ke kiri nilainya semakin kecil.",
+        pembahasan: "-0.75 berada di sebelah kiri -0.25, sehingga -0.75 < -0.25."
+      },
+      {
+        id: 4,
+        materi: "Penjumlahan Bilangan Rasional",
+        tingkat: "Mudah",
+        tipe: "mcq",
+        soal: "Hasil dari 1/3 + 2/3 adalah...",
+        pilihan: ["A. 3/6", "B. 1", "C. 2/3", "D. 3/3 = 0"],
+        jawaban: 1,
+        hint: "Penyebut sudah sama, langsung jumlahkan pembilangnya.",
+        pembahasan: "(1+2)/3 = 3/3 = 1."
+      },
+      {
+        id: 5,
+        materi: "Pengurangan Bilangan Rasional",
+        tingkat: "Sedang",
+        tipe: "mcq",
+        soal: "Hasil perhitungan dari 1/2 - 3/4 adalah...",
+        pilihan: ["A. 1/4", "B. -1/4", "C. -2/4", "D. 2/4"],
+        jawaban: 1,
+        hint: "Samakan penyebut menjadi 4 terlebih dahulu: 2/4 - 3/4.",
+        pembahasan: "2/4 - 3/4 = -1/4."
+      },
+      {
+        id: 6,
+        materi: "Penjumlahan Desimal",
+        tingkat: "Sedang",
+        tipe: "mcq",
+        soal: "Suhu di dalam kulkas mula-mula -2.5°C. Jika suhu dinaikkan 4.2°C, maka suhu sekarang adalah...",
+        pilihan: ["A. 6.7°C", "B. -6.7°C", "C. 1.7°C", "D. -1.7°C"],
+        jawaban: 2,
+        hint: "Gunakan operasi -2.5 + 4.2.",
+        pembahasan: "-2.5 + 4.2 = 1.7°C."
+      },
+      {
+        id: 7,
+        materi: "Perkalian Bilangan Rasional",
+        tingkat: "Sedang",
+        tipe: "mcq",
+        soal: "Hasil dari (-2/3) × (9/10) adalah...",
+        pilihan: ["A. -3/5", "B. 3/5", "C. -18/30", "D. A dan C Benar"],
+        jawaban: 3,
+        hint: "Kalikan pembilang dengan pembilang, penyebut dengan penyebut, lalu sederhanakan.",
+        pembahasan: "(-2×9)/(3×10) = -18/30. Sederhanakan dibagi 6 menjadi -3/5."
+      },
+      {
+        id: 8,
+        materi: "Pembagian Bilangan Rasional",
+        tingkat: "Sedang",
+        tipe: "mcq",
+        soal: "Hasil dari (3/4) ÷ (-1/2) adalah...",
+        pilihan: ["A. -3/2", "B. 3/2", "C. -3/8", "D. 3/8"],
+        jawaban: 0,
+        hint: "Ubah pembagian menjadi perkalian dengan membalik pecahan pembagi.",
+        pembahasan: "(3/4) × (-2/1) = -6/4 = -3/2."
+      },
+      {
+        id: 9,
+        materi: "Konversi Desimal ke Pecahan",
+        tingkat: "Sedang",
+        tipe: "mcq",
+        soal: "Bentuk pecahan paling sederhana dari 0.75 adalah...",
+        pilihan: ["A. 75/10", "B. 3/4", "C. 7/5", "D. 4/3"],
+        jawaban: 1,
+        hint: "0.75 = 75/100, lalu bagi pembilang dan penyebut dengan 25.",
+        pembahasan: "75/100 dibagi 25 = 3/4."
+      },
+      {
+        id: 10,
+        materi: "Operasi Campuran",
+        tingkat: "Menantang",
+        tipe: "mcq",
+        soal: "Hasil dari 1/2 + 3/4 × 2/3 adalah...",
+        pilihan: ["A. 5/6", "B. 1", "C. 1/2", "D. 7/6"],
+        jawaban: 1,
+        hint: "Kerjakan operasi perkalian terlebih dahulu!",
+        pembahasan: "Perkalian: (3/4) × (2/3) = 6/12 = 1/2. Lalu Penjumlahan: 1/2 + 1/2 = 1."
+      },
+      {
+        id: 11,
+        materi: "Soal Kontekstual Uang",
+        tingkat: "Menantang",
+        tipe: "mcq",
+        soal: "Ahmad memiliki saldo e-money Rp50.000,00. Ia membeli makanan seharga Rp22.500,00 dan mendapat kiriman saldo Rp15.000,00. Sisa saldo Ahmad sekarang adalah...",
+        pilihan: ["A. Rp42.500,00", "B. Rp12.500,00", "C. Rp57.500,00", "D. Rp37.500,00"],
+        jawaban: 0,
+        hint: "Kalimat matematika: 50.000 - 22.500 + 15.000.",
+        pembahasan: "50.000 - 22.500 = 27.500 + 15.000 = 42.500."
+      },
+      {
+        id: 12,
+        materi: "Soal Kontekstual Resep",
+        tingkat: "Menantang",
+        tipe: "mcq",
+        soal: "Ibu memerlukan 2.5 kg tepung untuk membuat 1 adonan kue. Jika Ibu ingin membuat 0.5 bagian adonan saja, berapa kg tepung yang dibutuhkan?",
+        pilihan: ["A. 1.25 kg", "B. 2.0 kg", "C. 0.5 kg", "D. 1.5 kg"],
+        jawaban: 0,
+        hint: "Kalikan 2.5 dengan 0.5.",
+        pembahasan: "2.5 × 0.5 = 1.25 kg."
+      },
+      {
+        id: 13,
+        materi: "Mengurutkan Bilangan",
+        tingkat: "Menantang",
+        tipe: "mcq",
+        soal: "Urutan bilangan rasional dari yang TERKECIL ke TERBESAR berikut adalah...",
+        pilihan: ["A. -0.5 ; -1/4 ; 0.25 ; 1/2", "B. 1/2 ; 0.25 ; -1/4 ; -0.5", "C. -1/4 ; -0.5 ; 0.25 ; 1/2", "D. -0.5 ; 0.25 ; -1/4 ; 1/2"],
+        jawaban: 0,
+        hint: "Ubah semua ke bentuk desimal: -0.5 ; -0.25 ; 0.25 ; 0.50.",
+        pembahasan: "Semakin besar angka negatif, nilainya semakin kecil: -0.5 < -0.25 < 0.25 < 0.5."
+      },
+      {
+        id: 14,
+        materi: "Benar/Salah Operasi",
+        tingkat: "Mudah",
+        tipe: "mcq",
+        soal: "Pernyataan: Hasil dari (-5) ÷ (-1/2) adalah 10. Pernyataan tersebut adalah...",
+        pilihan: ["A. Benar", "B. Salah"],
+        jawaban: 0,
+        hint: "Negatif dibagi negatif menghasilkan positif. 5 × 2 = 10.",
+        pembahasan: "(-5) × (-2/1) = +10. Pernyataan BENAR."
+      },
+      {
+        id: 15,
+        materi: "Soal Kontekstual Ketinggian",
+        tingkat: "Menantang",
+        tipe: "mcq",
+        soal: "Capung berada 1.5 meter di atas permukaan laut. Seekor ikan berada 2.3 meter di bawah permukaan laut. Jarak vertikal antara capung dan ikan adalah...",
+        pilihan: ["A. 0.8 meter", "B. 3.8 meter", "C. -0.8 meter", "D. 3.5 meter"],
+        jawaban: 1,
+        hint: "Hitung selisih: 1.5 - (-2.3).",
+        pembahasan: "1.5 - (-2.3) = 1.5 + 2.3 = 3.8 meter."
+      }
+    ];
+
+    /* ==========================================================================
+       NAVIGASI HALAMAN & VALIDASI
+       ========================================================================== */
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      const targetSection = document.getElementById(pageId);
+      if(targetSection) targetSection.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(btn => btn.getAttribute('onclick').includes(pageId));
+      if(activeBtn) activeBtn.classList.add('active');
+    }
+
+    function startLearning() {
+      const nama = document.getElementById('namaSiswa').value.trim();
+      const kelas = document.getElementById('kelasSiswa').value;
+
+      if (!nama || !kelas) {
+        alert("Harap isi Nama Lengkap dan Pilih Kelas terlebih dahulu!");
+        return;
+      }
+
+      studentData.nama = nama;
+      studentData.kelas = kelas;
+      document.getElementById('hasilSiswaInfo').innerText = `Nama: ${nama} | Kelas: ${kelas}`;
+      
+      switchPage('materi');
+      renderMateriContent();
+    }
+
+    /* ==========================================================================
+       RENDER MATERI DINAMIS
+       ========================================================================== */
+    function renderMateriContent() {
+      const val = document.getElementById('selectMateri').value;
+      const display = document.getElementById('materiDisplay');
+
+      let html = "";
+      if(val === "1") {
+        html = `
+          <h3>Pengertian Bilangan Rasional</h3>
+          <p><strong>Bilangan Rasional</strong> adalah bilangan yang dapat dinyatakan dalam bentuk pecahan <code>a/b</code>, di mana <code>a</code> dan <code>b</code> adalah bilangan bulat, serta <code>b ≠ 0</code>.</p>
+          <br>
+          <p><strong>Bentuk-bentuk Bilangan Rasional:</strong></p>
+          <ul>
+            <li>Pecahan Biasa/Campuran: 1/2, 3/4, 2 ½</li>
+            <li>Desimal Berhenti/Berulang: 0.5, 0.25, 0.333...</li>
+            <li>Bilangan Bulat: 5 (karena 5/1), -3 (karena -3/1)</li>
+          </ul>
+        `;
+      } else if(val === "2") {
+        html = `
+          <h3>Membandingkan Bilangan Rasional</h3>
+          <p>Untuk membandingkan dua bilangan rasional, kita bisa menyamakan penyebutnya atau mengubahnya ke bentuk desimal.</p>
+          <p><em>Contoh:</em> Bandingkan 2/5 dan 0.5.</p>
+          <p>2/5 = 0.4. Karena 0.4 < 0.5, maka <strong>2/5 < 0.5</strong>.</p>
+        `;
+      } else if(val === "3") {
+        html = `
+          <h3>Penjumlahan & Pengurangan Bilangan Rasional</h3>
+          <p>Saat menjumlahkan/mengurangi pecahan, pastikan penyebutnya sama terlebih dahulu.</p>
+          <p>Untuk bentuk desimal, luruskan tanda koma desimal saat menghitung susun.</p>
+        `;
+      } else if(val === "4") {
+        html = `
+          <h3>Perkalian & Pembagian Bilangan Rasional</h3>
+          <p><strong>Perkalian:</strong> (a/b) × (c/d) = (a×c) / (b×d)</p>
+          <p><strong>Pembagian:</strong> (a/b) ÷ (c/d) = (a/b) × (d/c)</p>
+        `;
+      } else {
+        html = `
+          <h3>Operasi Campuran & Kontekstual</h3>
+          <p>Urutan Operasi Hitung:</p>
+          <ol style="margin-left: 1.5rem;">
+            <li>Operasi di dalam kurung</li>
+            <li>Perkalian & Pembagian (dari kiri ke kanan)</li>
+            <li>Penjumlahan & Pengurangan (dari kiri ke kanan)</li>
+          </ol>
+        `;
+      }
+      display.innerHTML = html;
+    }
+
+    /* ==========================================================================
+       SIMULASI GARIS BILANGAN INTERAKTIF
+       ========================================================================== */
+    function updateNumberLine(val) {
+      document.getElementById('sliderText').innerText = val;
+      const pointer = document.getElementById('linePointer');
+      // Rentang slider -5 sampai 5 (total range 10)
+      const percent = ((parseFloat(val) + 5) / 10) * 100;
+      pointer.style.left = percent + "%";
+    }
+
+    /* ==========================================================================
+       LOGIKA LATIHAN SOAL INTERAKTIF
+       ========================================================================== */
+    function loadQuestion() {
+      const q = questionsDatabase[currentQuestionIndex];
+      document.getElementById('quizProgressText').innerText = `Soal ${currentQuestionIndex + 1} dari ${questionsDatabase.length}`;
+      document.getElementById('quizDifficulty').innerText = q.tingkat;
+      document.getElementById('quizQuestionText').innerText = q.soal;
+
+      const container = document.getElementById('quizOptionsContainer');
+      container.innerHTML = "";
+      document.getElementById('quizFeedback').className = "feedback-box";
+      document.getElementById('quizFeedback').innerText = "";
+      document.getElementById('btnNextQuiz').style.display = "none";
+      selectedOption = null;
+
+      q.pilihan.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(idx, btn);
+        container.appendChild(btn);
+      });
+
+      // Update progress bar
+      const progressPercent = ((currentQuestionIndex + 1) / questionsDatabase.length) * 100;
+      document.getElementById('quizProgressBar').style.width = progressPercent + "%";
+    }
+
+    function selectOption(idx, btnElement) {
+      document.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
+      btnElement.classList.add('selected');
+      selectedOption = idx;
+
+      checkAnswer();
+    }
+
+    function checkAnswer() {
+      const q = questionsDatabase[currentQuestionIndex];
+      const feedback = document.getElementById('quizFeedback');
+
+      if(selectedOption === q.jawaban) {
+        feedback.className = "feedback-box correct";
+        feedback.innerHTML = `<strong>✨ Luar Biasa, Jawaban Kamu Benar!</strong><p>${q.pembahasan}</p>`;
+        studentData.benar++;
+        studentData.skor += 10;
+      } else {
+        feedback.className = "feedback-box incorrect";
+        feedback.innerHTML = `<strong>❌ Jawaban Kurang Tepat.</strong><p>Coba pelajari lagi petunjuknya dan coba kembali!</p>`;
+        studentData.salah++;
+      }
+
+      updateGamification();
+      document.getElementById('btnNextQuiz').style.display = "inline-block";
+    }
+
+    function showHint() {
+      const q = questionsDatabase[currentQuestionIndex];
+      alert(`💡 Petunjuk Soal: ${q.hint}`);
+    }
+
+    function nextQuestion() {
+      if(currentQuestionIndex < questionsDatabase.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        calculateFinalResults();
+        switchPage('refleksi');
+      }
+    }
+
+    /* ==========================================================================
+       SISTEM GAMIFIKASI & BADGE
+       ========================================================================== */
+    function updateGamification() {
+      document.getElementById('gameScoreDisplay').innerText = `${studentData.skor} XP`;
+
+      if(studentData.skor >= 120) {
+        studentData.level = "Master Bilangan";
+        document.getElementById('badge3').classList.add('unlocked');
+      } else if(studentData.skor >= 60) {
+        studentData.level = "Pakar Pecahan";
+        document.getElementById('badge2').classList.add('unlocked');
+      } else if(studentData.skor >= 30) {
+        studentData.level = "Penjelajah";
+        document.getElementById('badge1').classList.add('unlocked');
+      }
+      document.getElementById('gameLevelDisplay').innerText = studentData.level;
+    }
+
+    /* ==========================================================================
+       REFLEKSI & PENGHITUNGAN HASIL
+       ========================================================================== */
+    function selectEmoji(btn, label) {
+      document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      studentData.refleksiEmoji = label;
+    }
+
+    function calculateFinalResults() {
+      const totalSoal = questionsDatabase.length;
+      studentData.persentase = Math.round((studentData.benar / totalSoal) * 100);
+
+      document.getElementById('scoreBenar').innerText = studentData.benar;
+      document.getElementById('scoreSalah').innerText = studentData.salah;
+      document.getElementById('scorePersen').innerText = studentData.persentase + "%";
+
+      let rekom = "";
+      if(studentData.persentase >= 80) {
+        rekom = "Sangat Baik! Kamu telah menguasai konsep bilangan rasional. Siap untuk materi tingkat lanjut!";
+      } else if(studentData.persentase >= 60) {
+        rekom = "Cukup Baik! Disarankan mengulang latihan pada operasi perkalian/pembagian desimal.";
+      } else {
+        rekom = "Perlu Pendampingan! Dipersilakan membaca kembali modul materi dasar dan melakukan latihan remedial.";
+      }
+      studentData.rekomendasi = rekom;
+      document.getElementById('rekomendasiText').innerText = rekom;
+    }
+
+    function submitRefleksi() {
+      studentData.refleksiTeks = document.getElementById('refleksiSubstansi').value.trim();
+      
+      if(!studentData.refleksiEmoji) {
+        alert("Pilih salah satu emoji untuk menggambarkan perasaan belajarmu!");
+        return;
+      }
+
+      switchPage('hasil');
+      sendDataToGoogleSheets();
+    }
+
+    /* ==========================================================================
+       PENGIRIMAN DATA KE GOOGLE APPS SCRIPT / GOOGLE SHEETS
+       ========================================================================== */
+    function sendDataToGoogleSheets() {
+      const statusDiv = document.getElementById('statusPengiriman');
+
+      if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === "MASUKKAN_URL_GOOGLE_APPS_SCRIPT_DI_SINI") {
+        statusDiv.style.color = "var(--accent)";
+        statusDiv.innerText = "⚠️ Catatan Guru: URL Google Apps Script belum diisi. Data hasil belajar disimulasikan secara lokal.";
+        return;
+      }
+
+      statusDiv.style.color = "var(--primary)";
+      statusDiv.innerText = "⏳ Memproses pengiriman data ke Google Sheets...";
+
+      const payload = {
+        timestamp: new Date().toLocaleString("id-ID"),
+        nama: studentData.nama,
+        kelas: studentData.kelas,
+        skor: studentData.skor,
+        benar: studentData.benar,
+        salah: studentData.salah,
+        persentase: studentData.persentase + "%",
+        level: studentData.level,
+        rekomendasi: studentData.rekomendasi,
+        refleksi: `[${studentData.refleksiEmoji}] ${studentData.refleksiTeks}`
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        statusDiv.style.color = "var(--success)";
+        statusDiv.innerText = "✅ Hasil belajar berhasil dikirim dan tersimpan di Google Sheets Guru!";
+      })
+      .catch(err => {
+        statusDiv.style.color = "var(--danger)";
+        statusDiv.innerText = "❌ Gagal mengirim data. Periksa koneksi internet Anda.";
+        console.error("Error sending data:", err);
+      });
+    }
+
+    /* INTEGRASI EXTERNAL GOOGLE */
+    function openGoogleDocs() {
+      if(GOOGLE_DOCS_URL && GOOGLE_DOCS_URL !== "MASUKKAN_URL_GOOGLE_DOCS_DI_SINI") {
+        window.open(GOOGLE_DOCS_URL, '_blank');
+      } else {
+        alert("URL Google Docs belum dikonfigurasi oleh Guru.");
+      }
+    }
+
+    function openGoogleSheets() {
+      alert("Akses spreadsheet utama dapat disesuaikan melalui link tautan Google Apps Script/Drive.");
+    }
+
+    // INISIALISASI SAAT PERTAMA KALI DIBUKA
+    window.onload = function() {
+      loadQuestion();
+      updateNumberLine(0);
+    };
+  </script>
+</body>
+</html>
